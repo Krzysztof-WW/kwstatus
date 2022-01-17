@@ -1,12 +1,16 @@
 #include "../kwstatus.h"
-#include <stdio.h>
 #include <sys/inotify.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 
-#define BCFILEBUF 20
+#define FILEBUF 20
+#define PATHBUF 100
+
+#define BRIGHTNES_DIR "/sys/class/backlight/"
+#define BRIGHTNESS "/brightness"
+#define MAX_BRIGHTNESS "/max_brightness"
 
 static char* icons[] = {
   "🌑",
@@ -20,30 +24,49 @@ void
 backlight(void* self) {
   struct modules* mod = (struct modules*)self;
   int bc_watch, bc_read;
-  char bcstr[BCFILEBUF] = {0};
-  char out[BCFILEBUF];
-  unsigned int backlight;
+  char file[PATHBUF+1] = BRIGHTNES_DIR;
+  int file_end;
+  char bcstr[FILEBUF+1] = {0};
+  char out[FILEBUF+1];
+  unsigned int backlight, max_brightness;
   short icon;
   struct inotify_event event;
 
+  /* get path */
+  strncat(file, mod->str, PATHBUF);
+  file_end = strlen(file);
 
-  bc_read = open(mod->str, O_RDONLY);
+  /* read max_backlight */
+  strncat(file, MAX_BRIGHTNESS, PATHBUF);
+  bc_read = open(file, O_RDONLY);
+  if(bc_read == -1) {
+    warn("Backlight cannot open max_brightness file");
+    return;
+  }
+  read(bc_read, bcstr, FILEBUF);
+  max_brightness = atoi(bcstr);
+  close(bc_read);
+
+  /* open brightness file */
+  file[file_end] = 0;
+  strncat(file, BRIGHTNESS, PATHBUF);
+  bc_read = open(file, O_RDONLY);
   if(bc_read == 0) {
     warn("Backlight cannot open file");
     return;
   }
 
   bc_watch = inotify_init();
-  inotify_add_watch(bc_watch, mod->str, IN_MODIFY);
+  inotify_add_watch(bc_watch, file, IN_MODIFY);
 
   while(1) {
     /* read backlight file */
     lseek(bc_read, 0, SEEK_SET);
-    bcstr[read(bc_read, bcstr, BCFILEBUF)] = 0;
+    bcstr[read(bc_read, bcstr, FILEBUF)] = 0;
 
     /* text */
     backlight = atoi(bcstr);
-    backlight = backlight*100/mod->num;
+    backlight = backlight*100/max_brightness;
     if(backlight > 80)
       icon = 0;
     else if(backlight > 60)
@@ -55,7 +78,7 @@ backlight(void* self) {
     else
       icon = 4;
 
-    snprintf(out, BCFILEBUF, "%s %d%%", icons[icon], backlight);
+    snprintf(out, FILEBUF, "%s %d%%", icons[icon], backlight);
 
     mod_update(mod, out);
 

@@ -2,7 +2,7 @@
 #include "kwstatus.h"
 
 struct modules mdl[] = {
-  {backlight, .str = "/sys/class/backlight/intel_backlight/brightness", .num = 1200},
+  {backlight, .str = "intel_backlight", .no_delim = 1},
   {print, .str = ";;", .no_delim = 1},
   {clockm, .num = 1},
 };
