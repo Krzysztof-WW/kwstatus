@@ -2,28 +2,14 @@
 #include <bits/pthreadtypes.h>
 #include <pthread.h>
 #include <string.h>
-
-#include <stdlib.h>
-
-void test_update(struct modules* self) {
-  pthread_mutex_lock(&self->mut);
-  strcpy(self->out, "abc");
-  pthread_mutex_unlock(&self->mut);
-
-  pthread_mutex_lock(&mupdate);
-  pthread_cond_signal(&cupdate);
-  pthread_mutex_unlock(&mupdate);
-}
+#include <unistd.h>
 
 void test(void* self) {
   struct modules* mod = (struct modules*)self;
-  
-  pthread_mutex_lock(&mod->mut);
+  int wait = mod->num;
 
-  mod->out = malloc(20);
-  memset(mod->out, 0, 20);
-
-  pthread_mutex_unlock(&mod->mut);
-
-  test_update(mod);
+  while(1) {
+    mod_update(mod, mod->str);
+    sleep(wait);
+  }
 }

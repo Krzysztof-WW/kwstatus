@@ -4,8 +4,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define BUFSIZE 500
+#include <time.h>
 
 /* global variables */
 pthread_cond_t cupdate;
@@ -22,8 +21,18 @@ emalloc(size_t size) {
   void* ret;
   ret = malloc(size);
   if(ret == NULL)
-    die("emalloc failed");
+    die("malloc failed");
   return ret;
+}
+
+void mod_update(struct modules* self, const char* out) {
+  pthread_mutex_lock(&self->mut);
+  strncpy(self->out, out, MODSIZE);
+  pthread_mutex_unlock(&self->mut);
+
+  pthread_mutex_lock(&mupdate);
+  pthread_cond_signal(&cupdate);
+  pthread_mutex_unlock(&mupdate);
 }
 
 void
@@ -32,6 +41,8 @@ init_modules(pthread_t* thr, size_t len) {
 
   for(n=0; n<len; n++) {
     pthread_mutex_init(&mdl[n].mut, NULL);
+    mdl[n].out = emalloc(MODSIZE);
+    memset(mdl[n].out, 0, MODSIZE);
     pthread_create(&thr[n], NULL, (void*)mdl[n].fun, &mdl[n]);
   }
 }
@@ -40,30 +51,36 @@ int
 main(int argc, char* argv[]) {
   size_t mlen = LENGTH(mdl);
   size_t n, outpos;
-  char out[BUFSIZE] = {0};
+  char out[BARSIZE] = {0};
   pthread_t thr[mlen];
+  const struct timespec update_delay = {0, align_ms*1000000};
 
   /* initialization */
   pthread_cond_init(&cupdate, NULL);
   pthread_mutex_init(&mupdate, NULL);
   init_modules(thr, mlen);
 
+  pthread_mutex_lock(&mupdate);
   /* main loop */
-  {
-    pthread_mutex_lock(&mupdate);
+  while(1) {
+    /* wait until next event */
     pthread_cond_wait(&cupdate, &mupdate);
+    pthread_mutex_unlock(&mupdate);
+    /* compensate parallel modules with similar timing */
+    nanosleep(&update_delay, NULL);
 
+    pthread_mutex_lock(&mupdate);
+    /* read all modules */
+    outpos = 0;
     for(n = 0; n < mlen; n++) {
       pthread_mutex_lock(&mdl[n].mut);
-      puts("aa");
-      outpos = strlen(out);
-      strncpy(out+outpos, mdl[n].out, BUFSIZE-outpos);
+        strncpy(out+outpos, mdl[n].out, BARSIZE-outpos);
+        outpos += strlen(mdl[n].out);
       pthread_mutex_unlock(&mdl[n].mut);
     }
 
+    /* update bar */
     puts(out);
-
-    pthread_mutex_unlock(&mupdate);
   }
 
 	return 0;
