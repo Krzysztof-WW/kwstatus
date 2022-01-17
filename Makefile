@@ -1,6 +1,6 @@
 CFLAGS = -O0 -Wall -g
 LDFLAGS = -g
-LIBS = -pthread
+LIBS = -pthread -lX11
 CC = gcc
 
 MODULES = modules/test\

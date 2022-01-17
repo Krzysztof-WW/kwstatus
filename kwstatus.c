@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <X11/Xlib.h>
 
 /* global variables */
 pthread_cond_t cupdate;
@@ -51,16 +52,19 @@ main(int argc, char* argv[]) {
   short dry = 0;
   char out[BARSIZE] = {0};
   pthread_t thr[mlen];
+  Display* dpy;
   const struct timespec update_delay = {0, align_ms*1000000};
 
   /* check args */
-  if(argc > 2 && !strcmp(argv[1], "-d"))
+  if(argc >= 2 && !strcmp(argv[1], "-d"))
       dry = 1;
 
   /* initialization */
   pthread_cond_init(&cupdate, NULL);
   pthread_mutex_init(&mupdate, NULL);
   init_modules(thr, mlen);
+	if(!dry && !(dpy = XOpenDisplay(NULL)))
+    die("Cannot open display");
 
   pthread_mutex_lock(&mupdate);
   /* main loop */
@@ -84,9 +88,10 @@ main(int argc, char* argv[]) {
     /* update bar */
     if(dry)
       puts(out);
-    else
-      /* set WM_NAME */
-      puts(out);
+    else {
+      XStoreName(dpy, DefaultRootWindow(dpy), out);
+      XSync(dpy, False);
+    }
   }
 
 	return 0;
