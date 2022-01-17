@@ -10,7 +10,7 @@
 pthread_cond_t cupdate;
 pthread_mutex_t mupdate;
 
-void
+static void
 die(char* str) {
   fputs(str, stderr);
   exit(1);
@@ -35,7 +35,7 @@ void mod_update(struct modules* self, const char* out) {
   pthread_mutex_unlock(&mupdate);
 }
 
-void
+static void
 init_modules(pthread_t* thr, size_t len) {
   size_t n;
 
