@@ -1,6 +1,5 @@
 #include "kwstatus.h"
 #include "config.h"
-#include <bits/pthreadtypes.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
