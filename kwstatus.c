@@ -1,6 +1,5 @@
 #include "kwstatus.h"
 #include "config.h"
-#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -45,14 +44,18 @@ init_modules(pthread_t* thr, size_t len) {
     pthread_create(&thr[n], NULL, (void*)mdl[n].fun, &mdl[n]);
   }
 }
-
 int
 main(int argc, char* argv[]) {
   size_t mlen = LENGTH(mdl);
   size_t n, outpos;
+  short dry = 0;
   char out[BARSIZE] = {0};
   pthread_t thr[mlen];
   const struct timespec update_delay = {0, align_ms*1000000};
+
+  /* check args */
+  if(argc > 2 && !strcmp(argv[1], "-d"))
+      dry = 1;
 
   /* initialization */
   pthread_cond_init(&cupdate, NULL);
@@ -79,7 +82,11 @@ main(int argc, char* argv[]) {
     }
 
     /* update bar */
-    puts(out);
+    if(dry)
+      puts(out);
+    else
+      /* set WM_NAME */
+      puts(out);
   }
 
 	return 0;
