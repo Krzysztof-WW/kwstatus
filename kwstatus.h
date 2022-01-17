@@ -25,6 +25,7 @@ extern pthread_mutex_t mupdate;
 void* emalloc(size_t size);
 void* ecalloc(size_t nmemb, size_t size);
 void mod_update(struct modules* self, const char* str);
+void warn(char* warning);
 
 #endif /* KWSTATUS_H */
 

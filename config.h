@@ -1,8 +1,8 @@
 #include "modules.h"
+#include "kwstatus.h"
 
 struct modules mdl[] = {
-  {test, .num = 2, .str = "aa"},
-  {test, .num = 3, .str = "bb"},
+  {backlight, .str = "/sys/class/backlight/intel_backlight/brightness", .num = 1200},
   {print, .str = ";;", .no_delim = 1},
   {clockm, .num = 1},
 };

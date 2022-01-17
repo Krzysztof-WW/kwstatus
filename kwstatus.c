@@ -15,6 +15,10 @@ die(char* str) {
   exit(1);
 }
 
+void
+warn(char* warning) {
+  fputs(warning, stderr);
+}
 void*
 emalloc(size_t size) {
   void* ret;

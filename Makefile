@@ -5,7 +5,8 @@ CC = gcc
 
 MODULES = modules/test\
 					modules/print\
-					modules/clockm
+					modules/clockm\
+					modules/backlight
 
 all: kwstatus
 
