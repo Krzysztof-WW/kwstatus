@@ -3,7 +3,8 @@ LDFLAGS = -g
 LIBS = -pthread
 CC = gcc
 
-MODULES = modules/test
+MODULES = modules/test\
+					modules/print
 
 all: kwstatus
 
