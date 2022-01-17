@@ -24,6 +24,15 @@ emalloc(size_t size) {
   return ret;
 }
 
+void*
+ecalloc(size_t nmemb, size_t size) {
+  void* ret;
+  ret = calloc(nmemb, size);
+  if(ret == NULL)
+    die("calloc failed");
+  return ret;
+}
+
 void mod_update(struct modules* self, const char* out) {
   pthread_mutex_lock(&self->mut);
   strncpy(self->out, out, MODSIZE);
@@ -40,8 +49,7 @@ init_modules(pthread_t* thr, size_t len) {
 
   for(n=0; n<len; n++) {
     pthread_mutex_init(&mdl[n].mut, NULL);
-    mdl[n].out = emalloc(MODSIZE);
-    memset(mdl[n].out, 0, MODSIZE);
+    mdl[n].out = ecalloc(MODSIZE, 1);
     pthread_create(&thr[n], NULL, (void*)mdl[n].fun, &mdl[n]);
   }
 }
@@ -71,11 +79,12 @@ main(int argc, char* argv[]) {
   while(1) {
     /* wait until next event */
     pthread_cond_wait(&cupdate, &mupdate);
-    pthread_mutex_unlock(&mupdate);
-    /* wait to align parallel modules with similar timings to avoid unnecessary updates */
-    nanosleep(&update_delay, NULL);
 
+    /* wait to align parallel modules with similar timings to avoid unnecessary updates */
+    pthread_mutex_unlock(&mupdate);
+    nanosleep(&update_delay, NULL);
     pthread_mutex_lock(&mupdate);
+
     /* read all modules */
     outpos = 0;
     for(n = 0; n < mlen; n++) {
