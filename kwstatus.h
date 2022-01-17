@@ -13,6 +13,7 @@ struct modules {
   void (*fun)(void*);
   const long num;
   const char* str;
+  const short no_delim;
 
   char* out;
   pthread_mutex_t mut;

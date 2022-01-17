@@ -36,6 +36,8 @@ ecalloc(size_t nmemb, size_t size) {
 void mod_update(struct modules* self, const char* out) {
   pthread_mutex_lock(&self->mut);
   strncpy(self->out, out, MODSIZE);
+  if(!self->no_delim && self->out[0])
+    strncat(self->out, delim, MODSIZE);
   pthread_mutex_unlock(&self->mut);
 
   pthread_mutex_lock(&mupdate);
@@ -56,7 +58,7 @@ init_modules(pthread_t* thr, size_t len) {
 int
 main(int argc, char* argv[]) {
   size_t mlen = LENGTH(mdl);
-  size_t n, outpos;
+  size_t n;
   short dry = 0;
   char out[BARSIZE] = {0};
   pthread_t thr[mlen];
@@ -86,11 +88,10 @@ main(int argc, char* argv[]) {
     pthread_mutex_lock(&mupdate);
 
     /* read all modules */
-    outpos = 0;
+    out[0] = 0;
     for(n = 0; n < mlen; n++) {
       pthread_mutex_lock(&mdl[n].mut);
-        strncpy(out+outpos, mdl[n].out, BARSIZE-outpos);
-        outpos += strlen(mdl[n].out);
+        strncat(out, mdl[n].out, BARSIZE);
       pthread_mutex_unlock(&mdl[n].mut);
     }
 
