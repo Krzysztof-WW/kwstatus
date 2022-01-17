@@ -4,7 +4,8 @@ LIBS = -pthread -lX11
 CC = gcc
 
 MODULES = modules/test\
-					modules/print
+					modules/print\
+					modules/clockm
 
 all: kwstatus
 

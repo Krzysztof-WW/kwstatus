@@ -1,4 +1,5 @@
-#define MOD(x) void x(void*);
+#define MOD(x) void x(void*)
 
-MOD(test)
-MOD(print)
+MOD(test);
+MOD(print);
+MOD(clockm);
