@@ -66,7 +66,7 @@ main(int argc, char* argv[]) {
     /* wait until next event */
     pthread_cond_wait(&cupdate, &mupdate);
     pthread_mutex_unlock(&mupdate);
-    /* compensate parallel modules with similar timing */
+    /* wait to align parallel modules with similar timings to avoid unnecessary updates */
     nanosleep(&update_delay, NULL);
 
     pthread_mutex_lock(&mupdate);
