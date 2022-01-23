@@ -1,12 +1,14 @@
 CFLAGS = -O0 -Wall -g
 LDFLAGS = -g
-LIBS = -pthread -lX11
+LIBS = ${MODULES_LIBS} -pthread -lX11
 CC = gcc
 
+MODULES_LIBS =
 MODULES = modules/test\
 					modules/print\
 					modules/clockm\
-					modules/backlight
+					modules/backlight\
+					modules/battery
 
 all: kwstatus
 

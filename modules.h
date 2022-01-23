@@ -4,3 +4,4 @@ MOD(test);
 MOD(print);
 MOD(clockm);
 MOD(backlight);
+MOD(battery);
