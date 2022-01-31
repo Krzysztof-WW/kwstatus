@@ -5,3 +5,4 @@ MOD(print);
 MOD(clockm);
 MOD(backlight);
 MOD(battery);
+MOD(pulse);

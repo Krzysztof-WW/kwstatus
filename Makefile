@@ -3,12 +3,13 @@ LDFLAGS = -g
 LIBS = ${MODULES_LIBS} -pthread -lX11
 CC = gcc
 
-MODULES_LIBS =
+MODULES_LIBS = -lpulse
 MODULES = modules/test\
 					modules/print\
 					modules/clockm\
 					modules/backlight\
-					modules/battery
+					modules/battery\
+					modules/pulse
 
 all: kwstatus
 

@@ -1,6 +1,7 @@
 #include "modules.h"
 
 struct modules mdl[] = {
+  {pulse},
   {battery, .num = 4},
   {backlight, .str = "intel_backlight", .no_delim = 1},
   {print, .str = ";;", .no_delim = 1},
