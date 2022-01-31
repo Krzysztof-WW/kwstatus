@@ -7,7 +7,7 @@
 #define LENGTH(x) (sizeof(x)/sizeof(x[0]))
 
 #define MODSIZE 100 /* out of module length */
-#define BARSIZE 500 /* max bar length */
+#define BARSIZE MODSIZE*LENGTH(mdl) /* max bar length */
 
 struct modules {
   void (*fun)(void*);
