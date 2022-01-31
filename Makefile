@@ -1,6 +1,6 @@
 CFLAGS = -O0 -Wall -g
 LDFLAGS = -g
-LIBS = ${MODULES_LIBS} -pthread -lX11
+LIBS = ${MODULES_LIBS} -pthread -lxcb
 CC = gcc
 
 MODULES_LIBS = -lpulse
