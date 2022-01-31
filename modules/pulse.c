@@ -9,10 +9,6 @@
 #include <pulse/volume.h>
 #include <pulse/subscribe.h>
 
-#include <stdint.h>
-#include <stdio.h>
-#include <unistd.h>
-
 #define OUTBUF 100
 
 #define SINK_MUTE_ICON "🔇"
