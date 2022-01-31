@@ -8,6 +8,7 @@
 #include <pulse/error.h>
 #include <pulse/volume.h>
 #include <pulse/subscribe.h>
+#include <math.h>
 
 #define OUTBUF 100
 
@@ -57,7 +58,7 @@ update_sink_info(const pa_sink_info* info) {
   pa_volume_t pvol;
 
   pvol = pa_cvolume_avg(&info->volume);
-  volume = (double)pvol / PA_VOLUME_NORM * 100.0;
+  volume = lround((double)pvol / PA_VOLUME_NORM * 100.0);
   sink_mute = info->mute;
 }
 

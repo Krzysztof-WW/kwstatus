@@ -3,7 +3,7 @@ LDFLAGS = -g
 LIBS = ${MODULES_LIBS} -pthread -lxcb
 CC = gcc
 
-MODULES_LIBS = -lpulse
+MODULES_LIBS = -lpulse -lm
 MODULES = modules/test\
 					modules/print\
 					modules/clockm\
