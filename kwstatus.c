@@ -18,7 +18,7 @@ die(char* str) {
 }
 
 void
-warn(char* warning) {
+warn(const char* warning) {
   fputs(warning, stderr);
 }
 void*
