@@ -5,6 +5,7 @@ struct modules mdl[] = {
   {battery, .num = 4},
   {backlight, .str = "intel_backlight", .no_delim = 1},
   {print, .str = ";;", .no_delim = 1},
+  {mpd},
   {clockm, .num = 1, .no_delim = 1},
 };
 
