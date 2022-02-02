@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <poll.h>
 
 #define PAUSED ""
 #define PLAYING ""
@@ -66,37 +67,31 @@ mpd(void* self) {
   char* state_icon;
   unsigned int elapsed_ms, elapsed_s, elapsed_min;
   unsigned int total_s, total_min;
+  struct pollfd mpd_poll;
+  mpd_poll.events = POLLIN;
 
   conn = mpd_connection_new(NULL, 0, 0);
   if(conn == NULL) {
     warn("Cannot allocate memory for mpd connection");
     return;
   }
-  if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS) {
-    warn("cannot connect to mpd server");
-    mpd_connection_free(conn);
-    return;
-  }
-  mpd_connection_set_timeout(conn, 1000);
+  if(mpd_connection_get_error(conn) == MPD_ERROR_SUCCESS)
+    mpd_poll.fd = mpd_connection_get_fd(conn);
 
   while(1) {
     /* check for errors */
     if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS) {
-      if(mpd_connection_get_error(conn) == MPD_ERROR_CLOSED ||
-          mpd_connection_get_error(conn) == MPD_ERROR_TIMEOUT ) {
-        warn("lost connection\n");
-        do {
-          mpd_connection_free(conn);
-          if(!(conn = mpd_connection_new(NULL, 0, 0))) {
-            warn("out of memory\n");
-            return;
-          }
-        } while(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS);
-        mpd_connection_set_timeout(conn, 1000);
-      } else {
-        warn("mpd error, exiting\n");
-        return;
-      }
+      out[0] = 0;
+      mod_update(mod, out);
+      do {
+        mpd_connection_free(conn);
+        sleep(5);
+        if(!(conn = mpd_connection_new(NULL, 0, 0))) {
+          warn("Cannot allocate memory for mpd connection");
+          return;
+        }
+      } while(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS);
+      mpd_poll.fd = mpd_connection_get_fd(conn);
     }
 
     /* get state */
@@ -144,12 +139,17 @@ mpd(void* self) {
     if(state_icon == NULL) {
       mpd_send_idle_mask(conn, MPD_IDLE_PLAYER);
       idle_event = mpd_recv_idle(conn, 1);
-      puts("aa");
     } else {
       mpd_send_idle_mask(conn, MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS);
-      idle_event = mpd_recv_idle(conn, 
-          state == MPD_STATE_PAUSE ? 1 : 0);
-      puts("bb");
+      if(state == MPD_STATE_PAUSE)
+        idle_event = mpd_recv_idle(conn, 1);
+      else {
+        if(poll(&mpd_poll, 1, 1000)) {
+          idle_event = mpd_recv_idle(conn, 1);
+        } else {
+          idle_event = mpd_run_noidle(conn);
+        }
+      }
     }
   }
 }
