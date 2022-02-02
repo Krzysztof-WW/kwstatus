@@ -22,10 +22,12 @@ struct modules {
 extern pthread_cond_t cupdate;
 extern pthread_mutex_t mupdate;
 
+/* modules routines */
 void* emalloc(size_t size);
 void* ecalloc(size_t nmemb, size_t size);
-void mod_update(struct modules* self, const char* str);
+char* smprintf(char *fmt, ...);
 void warn(char* warning);
+void mod_update(struct modules* self, const char* str);
 
 #endif /* KWSTATUS_H */
 

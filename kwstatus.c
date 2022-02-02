@@ -1,6 +1,7 @@
 #include "kwstatus.h"
 #include "config.h"
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include <time.h>
 #include <xcb/xcb.h>
@@ -24,8 +25,10 @@ void*
 emalloc(size_t size) {
   void* ret;
   ret = malloc(size);
-  if(ret == NULL)
-    die("malloc failed");
+  if(ret == NULL) {
+    warn("malloc failed");
+    pthread_exit(NULL);
+  }
   return ret;
 }
 
@@ -33,9 +36,31 @@ void*
 ecalloc(size_t nmemb, size_t size) {
   void* ret;
   ret = calloc(nmemb, size);
-  if(ret == NULL)
-    die("calloc failed");
+  if(ret == NULL) {
+    warn("calloc failed");
+    pthread_exit(NULL);
+  }
   return ret;
+}
+
+char *
+smprintf(char *fmt, ...)
+{
+	va_list fmtargs;
+	char *ret;
+	int len;
+
+	va_start(fmtargs, fmt);
+	len = vsnprintf(NULL, 0, fmt, fmtargs);
+	va_end(fmtargs);
+
+	ret = emalloc(++len);
+
+	va_start(fmtargs, fmt);
+	vsnprintf(ret, len, fmt, fmtargs);
+	va_end(fmtargs);
+
+	return ret;
 }
 
 void mod_update(struct modules* self, const char* out) {
@@ -56,7 +81,9 @@ init_modules(pthread_t* thr, size_t len) {
 
   for(n=0; n<len; n++) {
     pthread_mutex_init(&mdl[n].mut, NULL);
-    mdl[n].out = ecalloc(MODSIZE, 1);
+    mdl[n].out = calloc(MODSIZE, 1);
+    if(mdl[n].out == NULL)
+      die("out of memory\n");
     pthread_create(&thr[n], NULL, (void*)mdl[n].fun, &mdl[n]);
   }
 }
