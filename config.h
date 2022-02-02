@@ -3,7 +3,8 @@
 struct modules mdl[] = {
   {battery, .num = 3},
   {pulse},
-  {backlight, .str = "intel_backlight", .no_delim = 1},
+  {backlight, .str = "intel_backlight"},
+  {run_command, .str = "printf '📅 '; date '+%a %m.%d'", .num = 60, .no_delim = 1},
   {print, .str = ";;", .no_delim = 1},
   {mpd},
   {clockm, .num = 1, .no_delim = 1},

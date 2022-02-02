@@ -10,7 +10,8 @@ MODULES = modules/test\
 					modules/backlight\
 					modules/battery\
 					modules/pulse\
-					modules/mpd
+					modules/mpd\
+					modules/run_command
 
 all: kwstatus
 
