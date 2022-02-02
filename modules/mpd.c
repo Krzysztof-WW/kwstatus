@@ -8,7 +8,7 @@
 #define PLAYING ""
 
 char*
-pretty_name(char* file) {
+pretty_name(const char* file) {
   char* out;
   size_t n, end;
 
@@ -29,24 +29,26 @@ get_song_name(struct mpd_song* song) {
   char* tag_title;
   char* tag_artist;
   char* out;
+  int tag_title_generated = 0;
 
   tag_title = (char*)mpd_song_get_tag(song, MPD_TAG_TITLE, 0);
   if(tag_title == NULL) {
-    char *tmp;
-    tmp = (char*)mpd_song_get_uri(song);
+    const char *tmp;
+    tmp = mpd_song_get_uri(song);
     tag_title = pretty_name(tmp);
-    free(tmp);
+
+    tag_title_generated = 1;
   }
 
   tag_artist = (char*)mpd_song_get_tag(song, MPD_TAG_ARTIST, 0);
 
   if(tag_artist) {
     out = smprintf("%s - %s", tag_artist, tag_title);
-    free(tag_artist);
   } else
     out = smprintf("%s", tag_title);
 
-  free(tag_title);
+  if(tag_title_generated)
+    free(tag_title);
 
   return out;
 }
@@ -81,8 +83,8 @@ mpd(void* self) {
     /* check for errors */
     if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS) {
       if(mpd_connection_get_error(conn) == MPD_ERROR_CLOSED ||
-          mpd_connection_get_error(conn) == MPD_ERROR_TIMEOUT) {
-        //warn("lost connection\n");
+          mpd_connection_get_error(conn) == MPD_ERROR_TIMEOUT ) {
+        warn("lost connection\n");
         do {
           mpd_connection_free(conn);
           if(!(conn = mpd_connection_new(NULL, 0, 0))) {
@@ -123,7 +125,7 @@ mpd(void* self) {
         /* get song */
         song = mpd_run_current_song(conn);
         song_name = get_song_name(song);
-        //mpd_song_free(song);
+        mpd_song_free(song);
       }
 
       /* update text */
@@ -142,9 +144,12 @@ mpd(void* self) {
     if(state_icon == NULL) {
       mpd_send_idle_mask(conn, MPD_IDLE_PLAYER);
       idle_event = mpd_recv_idle(conn, 1);
+      puts("aa");
     } else {
       mpd_send_idle_mask(conn, MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS);
-      idle_event = mpd_recv_idle(conn, 0);
+      idle_event = mpd_recv_idle(conn, 
+          state == MPD_STATE_PAUSE ? 1 : 0);
+      puts("bb");
     }
   }
 }
