@@ -10,7 +10,6 @@ run_command(void* self) {
   char out[MODSIZE];
 
   while(1) {
-    puts("update");
     fp = popen(mod->str, "r");
     if(fp == NULL) {
       warn("Cannot execute cmd");

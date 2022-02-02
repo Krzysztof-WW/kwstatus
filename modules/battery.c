@@ -63,7 +63,6 @@ battery(void* self) {
     fread(status, 1, MODSIZE, fstatus);
 
     if(old_status != status[0] || old_level != level_num) {
-      puts("update");
       old_status = status[0]; old_level = level_num;
 
       if(status[0] == 'F' || level_num >= FULL_CHARGE) {
