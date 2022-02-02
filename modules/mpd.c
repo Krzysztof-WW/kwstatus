@@ -11,6 +11,8 @@
 #define REPEAT "🔁 "
 #define RANDOM "🔀 "
 
+#define CONNECTION_RETRY_TIME 5
+
 char*
 pretty_name(const char* file) {
   char* out;
@@ -66,13 +68,14 @@ mpd(void* self) {
   enum mpd_state state;
   enum mpd_idle idle_event = MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS;
   struct mpd_song* song;
-  char* song_name, *state_icon, *random_icon, *repeat_icon;
+  char* song_name;
+  const char* state_icon, *random_icon, *repeat_icon;
   unsigned int elapsed_ms, elapsed_s, elapsed_min;
   unsigned int total_s, total_min;
   struct pollfd mpd_poll;
   mpd_poll.events = POLLIN;
 
-  conn = mpd_connection_new(NULL, 0, 0);
+  conn = mpd_connection_new(mod->str, mod->num, 0);
   if(conn == NULL) {
     warn("Cannot allocate memory for mpd connection");
     return;
@@ -87,8 +90,8 @@ mpd(void* self) {
       mod_update(mod, out);
       do {
         mpd_connection_free(conn);
-        sleep(5);
-        if(!(conn = mpd_connection_new(NULL, 0, 0))) {
+        sleep(CONNECTION_RETRY_TIME);
+        if(!(conn = mpd_connection_new(mod->str, mod->num, 0))) {
           warn("Cannot allocate memory for mpd connection");
           return;
         }
@@ -145,10 +148,12 @@ mpd(void* self) {
     }
     mpd_status_free(status);
 
-    /* wait for next event or if playing to the next second */
+    /* wait for next event or if playing wait second */
     if(state_icon == NULL) {
       mpd_send_idle_mask(conn, MPD_IDLE_PLAYER);
       idle_event = mpd_recv_idle(conn, 1);
+      if(idle_event) /* also update options because we do not know if any ware changed */
+        idle_event = MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS;
     } else {
       mpd_send_idle_mask(conn, MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS);
       if(state == MPD_STATE_PAUSE)
