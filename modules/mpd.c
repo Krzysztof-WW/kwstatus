@@ -8,6 +8,9 @@
 #define PAUSED ""
 #define PLAYING ""
 
+#define REPEAT "🔁 "
+#define RANDOM "🔀 "
+
 char*
 pretty_name(const char* file) {
   char* out;
@@ -61,10 +64,9 @@ mpd(void* self) {
   struct mpd_connection* conn;
   struct mpd_status* status;
   enum mpd_state state;
-  enum mpd_idle idle_event = 1;
+  enum mpd_idle idle_event = MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS;
   struct mpd_song* song;
-  char* song_name;
-  char* state_icon;
+  char* song_name, *state_icon, *random_icon, *repeat_icon;
   unsigned int elapsed_ms, elapsed_s, elapsed_min;
   unsigned int total_s, total_min;
   struct pollfd mpd_poll;
@@ -104,7 +106,7 @@ mpd(void* self) {
       elapsed_min = elapsed_s / 60;
       elapsed_s %= 60;
 
-      if(idle_event != 0) {
+      if(idle_event & MPD_IDLE_PLAYER) {
         total_s = mpd_status_get_total_time(status);
         total_min = total_s / 60;
         total_s %= 60;
@@ -123,8 +125,16 @@ mpd(void* self) {
         mpd_song_free(song);
       }
 
+      if(idle_event & MPD_IDLE_OPTIONS) {
+        repeat_icon = mpd_status_get_repeat(status) ? REPEAT : "";
+        random_icon = mpd_status_get_random(status) ? RANDOM : "";
+      }
+
       /* update text */
-      snprintf(out, MODSIZE-1, "%d:%02d/%d:%02d %s %s", elapsed_min, elapsed_s, total_min, total_s, state_icon, song_name);
+      snprintf(out, MODSIZE-1, "%d:%02d/%d:%02d %s%s%s %s",
+          elapsed_min, elapsed_s, total_min, total_s,
+          repeat_icon, random_icon, state_icon,
+          song_name);
       mod_update(mod, out);
 
     } else {
