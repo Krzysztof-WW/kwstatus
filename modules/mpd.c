@@ -16,15 +16,17 @@
 char*
 pretty_name(const char* file) {
   char* out;
-  size_t n, end;
+  size_t n, end, len;
 
-  for(n = strlen(file); n != 0 && file[n] != '/'; n--) {
-    if(file[n] == '.')
+  end = len = strlen(file);
+
+  for(n = len; n != 0 && file[n] != '/'; n--) {
+    if(file[n] == '.' && end == len)
       end = n;
   }
 
-  out = emalloc(end-n+1);
-  out[end-n] = 0;
+  out = emalloc(end-n);
+  out[end-n-1] = 0;
   memcpy(out, file+n+1, end-n-1);
 
   return out;
