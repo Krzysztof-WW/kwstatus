@@ -1,4 +1,5 @@
 #include "../kwstatus.h"
+#include <stdio.h>
 #include <time.h>
 
 #define CLOCK_BUF 20

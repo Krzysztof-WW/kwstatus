@@ -1,4 +1,5 @@
 #include "../kwstatus.h"
+#include <stdio.h>
 #include <mpd/client.h>
 #include <string.h>
 #include <stdlib.h>
@@ -79,7 +80,7 @@ mpd(void* self) {
 
   conn = mpd_connection_new(mod->str, mod->num, 0);
   if(conn == NULL) {
-    warn("Cannot allocate memory for mpd connection");
+    fputs("mpd: Cannot allocate memory for mpd connection\n", stderr);
     return;
   }
   if(mpd_connection_get_error(conn) == MPD_ERROR_SUCCESS)
@@ -94,7 +95,7 @@ mpd(void* self) {
         mpd_connection_free(conn);
         sleep(CONNECTION_RETRY_TIME);
         if(!(conn = mpd_connection_new(mod->str, mod->num, 0))) {
-          warn("Cannot allocate memory for mpd connection");
+          fputs("mpd: Cannot allocate memory for mpd connection\n", stderr);
           return;
         }
       } while(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS);

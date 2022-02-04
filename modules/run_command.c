@@ -1,4 +1,5 @@
 #include "../kwstatus.h"
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -12,7 +13,7 @@ run_command(void* self) {
   while(1) {
     fp = popen(mod->str, "r");
     if(fp == NULL) {
-      warn("Cannot execute cmd");
+      fputs("run_command: cannot execute cmd\n", stderr);
       return;
     }
 

@@ -1,10 +1,7 @@
 #include "../kwstatus.h"
-#include <pthread.h>
-#include <pulse/def.h>
+#include <stdio.h>
 #include <pulse/mainloop.h>
-#include <pulse/context.h>
 #include <pulse/introspect.h>
-#include <pulse/operation.h>
 #include <pulse/error.h>
 #include <pulse/volume.h>
 #include <pulse/subscribe.h>
@@ -21,7 +18,6 @@
 
 struct modules* mod;
 static enum pa_context_state state;
-static pa_server_info sinfo;
 static pa_mainloop* pml;
 
 static uint32_t default_sink_index;
@@ -98,9 +94,8 @@ source_cb(pa_context* context, const pa_source_info* info, int eol, void* _) {
 
 static void 
 servinfo_cb(pa_context* context, const pa_server_info* info, void* _) {
-  sinfo = *info;
-  pa_context_get_sink_info_by_name(context, sinfo.default_sink_name, sink_cb, NULL);
-  pa_context_get_source_info_by_name(context, sinfo.default_source_name, source_cb, NULL);
+  pa_context_get_sink_info_by_name(context, info->default_sink_name, sink_cb, NULL);
+  pa_context_get_source_info_by_name(context, info->default_source_name, source_cb, NULL);
 }
 
 static void
@@ -122,7 +117,7 @@ subscribe_cb(pa_context *c, pa_subscription_event_type_t t, uint32_t idx, void *
 static void
 success_cb(pa_context *c, int success, void *userdata) {
   if(!success)
-    warn("Pulseaudio subscription not succeed");
+    fputs("pulse: subscription not succeed\n", stderr);
 }
 
 void
@@ -139,12 +134,13 @@ pulse(void* self) {
     pa_mainloop_iterate(pml, 1, NULL);
   }
   if (state != PA_CONTEXT_READY) {
-    fprintf(stderr, "failed to connect to pulse daemon: %s\n", pa_strerror(pa_context_errno(pcontext)));
+    fprintf(stderr, "pulse: failed to connect to pulse daemon: %s\n", pa_strerror(pa_context_errno(pcontext)));
     return;
   }
 
   wait_til_op_end(pa_context_get_server_info(pcontext, servinfo_cb, NULL));
   pa_context_set_subscribe_callback(pcontext, subscribe_cb, NULL);
   wait_til_op_end(pa_context_subscribe(pcontext, PA_SUBSCRIPTION_MASK_SINK | PA_SUBSCRIPTION_MASK_SOURCE | PA_SUBSCRIPTION_MASK_SERVER, success_cb, NULL));
+
   pa_mainloop_run(pml, NULL);
 }

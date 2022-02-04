@@ -42,14 +42,14 @@ battery(void* self) {
   /* open level file */
   flevel = fopen(LEVEL, "r");
   if(flevel == NULL) {
-    warn("Battery cannot open level");
+    fputs("battery: cannot open level\n", stderr);
     return;
   }
 
   /* open status file */
   fstatus = fopen(STATUS, "r");
   if(fstatus == NULL) {
-    warn("Battery cannot open status");
+    fputs("battery: cannot open status\n", stderr);
     return;
   }
 

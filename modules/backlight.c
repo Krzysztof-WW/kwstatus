@@ -1,4 +1,5 @@
 #include "../kwstatus.h"
+#include <stdio.h>
 #include <sys/inotify.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -40,7 +41,7 @@ backlight(void* self) {
   strncat(file, MAX_BRIGHTNESS, PATHBUF);
   bc_read = open(file, O_RDONLY);
   if(bc_read == -1) {
-    warn("Backlight cannot open max_brightness file");
+    fputs("backlight: cannot open max_brightness file\n", stderr);
     return;
   }
   read(bc_read, bcstr, FILEBUF);
@@ -52,7 +53,7 @@ backlight(void* self) {
   strncat(file, BRIGHTNESS, PATHBUF);
   bc_read = open(file, O_RDONLY);
   if(bc_read == 0) {
-    warn("Backlight cannot open file");
+    fputs("backlight: cannot open file\n", stderr);
     return;
   }
 

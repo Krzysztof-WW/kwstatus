@@ -1,4 +1,5 @@
 #include "kwstatus.h"
+#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 
@@ -19,7 +20,7 @@ ecalloc(size_t nmemb, size_t size) {
   void* ret;
   ret = calloc(nmemb, size);
   if(ret == NULL) {
-    warn("calloc: out of memory");
+    fputs("calloc: out of memory\n", stderr);
     pthread_exit(NULL);
   }
   return ret;
