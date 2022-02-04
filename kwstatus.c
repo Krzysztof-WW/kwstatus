@@ -10,20 +10,16 @@
 static pthread_cond_t cupdate;
 static pthread_mutex_t mupdate;
 
-static void
-die(char* str) {
-  fputs(str, stderr);
-  exit(1);
-}
-
 void
 mod_update(struct modules* self, const char* out) {
+  /* copy text to module */
   pthread_mutex_lock(&self->mut);
   strncpy(self->out, out, MODSIZE-1);
-  if(!self->no_delim && self->out[0])
+  if(!self->no_delim && self->out[0]) /* add delimiter at the end */
     strncat(self->out, delim, MODSIZE-1);
   pthread_mutex_unlock(&self->mut);
 
+  /* send signal to update status bar */
   pthread_mutex_lock(&mupdate);
   pthread_cond_signal(&cupdate);
   pthread_mutex_unlock(&mupdate);
@@ -33,10 +29,9 @@ static void
 init_modules(pthread_t* thr, size_t len) {
   size_t n;
 
+  /* initialize objects for module and lunch it */
   for(n=0; n<len; n++) {
     pthread_mutex_init(&mdl[n].mut, NULL);
-    //mdl[n].out = calloc(MODSIZE, 1);
-    memset(mdl[n].out, 0, MODSIZE);
     pthread_create(&thr[n], NULL, (void*)mdl[n].fun, &mdl[n]);
   }
 }
@@ -45,16 +40,22 @@ int
 main(int argc, char* argv[]) {
   size_t mlen = LENGTH(mdl);
   size_t n;
-  short dry = 0;
   char out[BARSIZE] = {0};
   pthread_t thr[mlen];
   xcb_connection_t *c;
   xcb_window_t root;
+  short dry = 0;
   const struct timespec update_delay = {0, align_ms*1000000};
 
   /* check args */
-  if(argc >= 2 && !strcmp(argv[1], "-d"))
+  if(argc >= 2) {
+    if(!strcmp(argv[1], "-d"))
       dry = 1;
+    else {
+      fprintf(stderr, "usage: %s [-d]\n", argv[0]);
+      exit(1);
+    }
+  }
 
   /* initialization */
   pthread_cond_init(&cupdate, NULL);
@@ -62,8 +63,10 @@ main(int argc, char* argv[]) {
   init_modules(thr, mlen);
   if(!dry) {
     c = xcb_connect(NULL, NULL);
-    if(!c)
-      die("Cannot connect to X server");
+    if(!c) {
+      fputs("Cannot connect to X server\n", stderr);
+      exit(1);
+    }
     root = xcb_setup_roots_iterator(xcb_get_setup(c)).data->root;
   }
 
@@ -73,13 +76,12 @@ main(int argc, char* argv[]) {
     /* wait until next event */
     pthread_cond_wait(&cupdate, &mupdate);
 
-    /* wait to align parallel modules with similar timings to avoid unnecessary updates */
+    /* wait for modules with similar timings to avoid unnecessary updates */
     pthread_mutex_unlock(&mupdate);
     nanosleep(&update_delay, NULL);
     pthread_mutex_lock(&mupdate);
 
     /* read all modules */
-    out[0] = 0;
     for(n = 0; n < mlen; n++) {
       pthread_mutex_lock(&mdl[n].mut);
         strncat(out, mdl[n].out, BARSIZE-1);
