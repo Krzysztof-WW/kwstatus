@@ -34,7 +34,8 @@ battery(void* self) {
   FILE* flevel, *fstatus;
   char level[MODSIZE+1], status[MODSIZE+1];
   int level_num, old_level = -1, old_status = -1;
-  int low_set, critical_set, full_set, charging_set, discharging_set;
+  int low_set = 0, critical_set = 0, full_set = 0,
+      charging_set = 0, discharging_set = 0;
   const char* icon;
   char out[MODSIZE+1];
 

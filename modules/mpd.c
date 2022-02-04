@@ -70,8 +70,8 @@ mpd(void* self) {
   enum mpd_state state;
   enum mpd_idle idle_event = MPD_IDLE_PLAYER | MPD_IDLE_OPTIONS;
   struct mpd_song* song;
-  char* song_name;
-  const char* state_icon, *random_icon, *repeat_icon;
+  char* song_name = NULL;
+  const char* state_icon = NULL, *random_icon, *repeat_icon;
   unsigned int elapsed_ms, elapsed_s, elapsed_min;
   unsigned int total_s, total_min;
   struct pollfd mpd_poll;
@@ -119,7 +119,7 @@ mpd(void* self) {
         /* get status icon */
         if(state == MPD_STATE_PLAY)
           state_icon = PLAYING;
-        else if(state == MPD_STATE_PAUSE)
+        else
           state_icon = PAUSED;
 
         if(song_name != NULL)

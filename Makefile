@@ -1,4 +1,5 @@
-CFLAGS = -O0 -Wall -g
+PREFIX = /usr/local
+CFLAGS = -O3 -Wall -Wno-unused-result -g
 LDFLAGS = -g
 LIBS = ${MODULES_LIBS} -pthread -lxcb
 CC = gcc
@@ -17,11 +18,15 @@ all: kwstatus
 
 kwstatus.o: modules.h config.h kwstatus.h
 
-kwstatus: kwstatus.o ${MODULES:=.o}
-	${CC} -o $@ kwstatus.o ${MODULES:=.o} ${LDFLAGS} ${LIBS}
+kwstatus: kwstatus.o util.o ${MODULES:=.o}
+	${CC} -o $@ kwstatus.o util.o ${MODULES:=.o} ${LDFLAGS} ${LIBS}
 
 .c.o:
 	${CC} ${CFLAGS} -c $< -o $@
+
+install: kwstatus
+	mkdir -p ${PREFIX}/bin
+	cp -f kwstatus ${PREFIX}/bin/kwstatus
 
 clean:
 	rm -f *.o modules/*.o kwstatus

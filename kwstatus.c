@@ -1,15 +1,14 @@
 #include "kwstatus.h"
 #include "config.h"
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 #include <time.h>
 #include <xcb/xcb.h>
 #include <xcb/xcb_atom.h>
 
 /* global variables */
-pthread_cond_t cupdate;
-pthread_mutex_t mupdate;
+static pthread_cond_t cupdate;
+static pthread_mutex_t mupdate;
 
 static void
 die(char* str) {
@@ -18,56 +17,11 @@ die(char* str) {
 }
 
 void
-warn(const char* warning) {
-  fputs(warning, stderr);
-}
-void*
-emalloc(size_t size) {
-  void* ret;
-  ret = malloc(size);
-  if(ret == NULL) {
-    warn("malloc failed");
-    pthread_exit(NULL);
-  }
-  return ret;
-}
-
-void*
-ecalloc(size_t nmemb, size_t size) {
-  void* ret;
-  ret = calloc(nmemb, size);
-  if(ret == NULL) {
-    warn("calloc failed");
-    pthread_exit(NULL);
-  }
-  return ret;
-}
-
-char *
-smprintf(char *fmt, ...)
-{
-	va_list fmtargs;
-	char *ret;
-	int len;
-
-	va_start(fmtargs, fmt);
-	len = vsnprintf(NULL, 0, fmt, fmtargs);
-	va_end(fmtargs);
-
-	ret = emalloc(++len);
-
-	va_start(fmtargs, fmt);
-	vsnprintf(ret, len, fmt, fmtargs);
-	va_end(fmtargs);
-
-	return ret;
-}
-
-void mod_update(struct modules* self, const char* out) {
+mod_update(struct modules* self, const char* out) {
   pthread_mutex_lock(&self->mut);
-  strncpy(self->out, out, MODSIZE);
+  strncpy(self->out, out, MODSIZE-1);
   if(!self->no_delim && self->out[0])
-    strncat(self->out, delim, MODSIZE);
+    strncat(self->out, delim, MODSIZE-1);
   pthread_mutex_unlock(&self->mut);
 
   pthread_mutex_lock(&mupdate);
@@ -81,12 +35,12 @@ init_modules(pthread_t* thr, size_t len) {
 
   for(n=0; n<len; n++) {
     pthread_mutex_init(&mdl[n].mut, NULL);
-    mdl[n].out = calloc(MODSIZE, 1);
-    if(mdl[n].out == NULL)
-      die("out of memory\n");
+    //mdl[n].out = calloc(MODSIZE, 1);
+    memset(mdl[n].out, 0, MODSIZE);
     pthread_create(&thr[n], NULL, (void*)mdl[n].fun, &mdl[n]);
   }
 }
+
 int
 main(int argc, char* argv[]) {
   size_t mlen = LENGTH(mdl);
@@ -128,7 +82,7 @@ main(int argc, char* argv[]) {
     out[0] = 0;
     for(n = 0; n < mlen; n++) {
       pthread_mutex_lock(&mdl[n].mut);
-        strncat(out, mdl[n].out, BARSIZE);
+        strncat(out, mdl[n].out, BARSIZE-1);
       pthread_mutex_unlock(&mdl[n].mut);
     }
 
@@ -136,7 +90,8 @@ main(int argc, char* argv[]) {
     if(dry)
       puts(out);
     else {
-      xcb_change_property(c, XCB_PROP_MODE_REPLACE, root, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, strlen(out), out);
+      xcb_change_property(c, XCB_PROP_MODE_REPLACE, root, XCB_ATOM_WM_NAME,
+          XCB_ATOM_STRING, 8, strlen(out), out);
       xcb_flush(c);
     }
   }

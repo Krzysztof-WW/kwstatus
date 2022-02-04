@@ -15,17 +15,14 @@ struct modules {
   const char* str;
   const short no_delim;
 
-  char* out;
+  char out[MODSIZE];
   pthread_mutex_t mut;
 };
-
-extern pthread_cond_t cupdate;
-extern pthread_mutex_t mupdate;
 
 /* modules routines */
 void* emalloc(size_t size);
 void* ecalloc(size_t nmemb, size_t size);
-char* smprintf(char *fmt, ...);
+char* smprintf(const char *fmt, ...);
 void warn(const char* warning);
 void mod_update(struct modules* self, const char* str);
 
