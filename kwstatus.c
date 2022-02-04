@@ -1,10 +1,13 @@
-#include "kwstatus.h"
-#include "config.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <xcb/xcb.h>
 #include <xcb/xcb_atom.h>
+
+#include "kwstatus.h"
+#include "config.h"
 
 /* global variables */
 static pthread_cond_t cupdate;
@@ -82,6 +85,7 @@ main(int argc, char* argv[]) {
     pthread_mutex_lock(&mupdate);
 
     /* read all modules */
+    out[0] = 0;
     for(n = 0; n < mlen; n++) {
       pthread_mutex_lock(&mdl[n].mut);
         strncat(out, mdl[n].out, BARSIZE-1);
