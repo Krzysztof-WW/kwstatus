@@ -1,24 +1,52 @@
+/*  battery module
+
+    Monitor battery and do actions on events
+
+    Configuration:
+      .str - battery name
+      .num - refresh time (s)
+      See other macros below
+
+    Default macros are set to send notifications on battery level events and
+    delete notifications when they are not needed anymore.
+*/
+
+/* icon when battery is charging */
+#define CHARGING_ICON "🔌"
+/* icon when battery is full */
+#define FULL_ICON ""
+
+/* command to execute when battery starts charging */
+#define CHARGING_CMD "dunstify -C 122; dunstify -C 123"
+/* command to execute when battery starts discharging */
+#define DISCHARGING_CMD "dunstify -C 121"
+
+/* battery level in % this option is for batteries that stop charging and do
+ * not indicate they are full, otherwise set it to 100 */
+#define FULL_CHARGE 90
+/* command to execute when battery indicate is full or reach FULL_CHARGE charge */
+#define FULL_CHARGE_CMD "dunstify -r 121 'Battery is full'"
+
+/* first step in low charge */
+#define LOW_CHARGE 20
+#define LOW_CHARGE_CMD "dunstify -r 122 -u critical 'Battery is low'"
+
+/* last warning in low charge */
+#define CRITICAL_CHARGE 15
+#define CRITICAL_CHARGE_CMD "dunstify -r 123 -u critical 'Battery on critical level!'"
+
+/* end of configuration */
+
 #include "../kwstatus.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
-#define LEVEL "/sys/class/power_supply/BAT0/capacity"
-#define STATUS "/sys/class/power_supply/BAT0/status"
-
-#define CHARGING_ICON "🔌"
-#define FULL_ICON ""
-
-#define FULL_CHARGE 90
-#define LOW_CHARGE 20
-#define CRITICAL_CHARGE 15
-
-#define CHARGING_CMD "dunstify -C 122; dunstify -C 123"
-#define DISCHARGING_CMD "dunstify -C 121"
-
-#define FULL_CHARGE_CMD "dunstify -r 121 'Battery is full'"
-#define LOW_CHARGE_CMD "dunstify -r 122 -u critical 'Battery is low'"
-#define CRITICAL_CHARGE_CMD "dunstify -r 123 -u critical 'Battery on critical level!'"
+#define FILEBUF 100
+#define BATTERY_ROOT "/sys/class/power_supply/"
+#define LEVEL "/capacity"
+#define STATUS "/status"
 
 static const char* bat_icons[] = {
   "",
@@ -38,16 +66,25 @@ battery(void* self) {
       charging_set = 0, discharging_set = 0;
   const char* icon;
   char out[MODSIZE+1];
+  char file[FILEBUF+1] = BATTERY_ROOT;
+  size_t file_end;
+
+  /* get path */
+  strncat(file, mod->str, FILEBUF);
+  file_end = strlen(file);
 
   /* open level file */
-  flevel = fopen(LEVEL, "r");
+  strncpy(file+file_end, LEVEL, FILEBUF-file_end);
+  flevel = fopen(file, "r");
   if(flevel == NULL) {
     fputs("battery: cannot open level\n", stderr);
     return;
   }
+  file[file_end] = 0;
 
   /* open status file */
-  fstatus = fopen(STATUS, "r");
+  strncat(file+file_end, STATUS, FILEBUF-file_end);
+  fstatus = fopen(file, "r");
   if(fstatus == NULL) {
     fputs("battery: cannot open status\n", stderr);
     return;

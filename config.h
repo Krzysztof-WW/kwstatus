@@ -1,10 +1,15 @@
 #include "modules.h"
 
 struct modules mdl[] = {
-  {battery, .num = 3},
+  {battery, .str = "BAT0", .num = 3},
+
   {pulse},
+
   {backlight, .str = "intel_backlight"},
-  {run_command, .str = "printf '📅 '; date '+%a %m.%d'", .num = 60, .no_delim = 1},
+
+  {print, .str = "📅 ", .no_delim = 1},
+  {run_command, .str = "date '+%a %m.%d'", .num = 240, .no_delim = 1},
+
   {print, .str = ";;", .no_delim = 1},
   {mpd},
   {clockm, .num = 1, .no_delim = 1},
