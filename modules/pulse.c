@@ -94,8 +94,8 @@ source_cb(pa_context* context, const pa_source_info* info, int eol, void* _) {
 
 static void 
 servinfo_cb(pa_context* context, const pa_server_info* info, void* _) {
-  pa_context_get_sink_info_by_name(context, info->default_sink_name, sink_cb, NULL);
-  pa_context_get_source_info_by_name(context, info->default_source_name, source_cb, NULL);
+  pa_operation_unref(pa_context_get_sink_info_by_name(context, info->default_sink_name, sink_cb, NULL));
+  pa_operation_unref(pa_context_get_source_info_by_name(context, info->default_source_name, source_cb, NULL));
 }
 
 static void
@@ -106,11 +106,11 @@ state_cb(pa_context* c, void* _) {
 static void
 subscribe_cb(pa_context *c, pa_subscription_event_type_t t, uint32_t idx, void *userdata) {
   if((t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK) { // update status of sink
-    pa_context_get_sink_info_by_index(c, default_sink_index, sink_cb, NULL);
+    pa_operation_unref(pa_context_get_sink_info_by_index(c, default_sink_index, sink_cb, NULL));
   } else if((t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SOURCE) { // update mute of source
-    pa_context_get_source_info_by_index(c, default_source_index, source_cb, NULL);
+    pa_operation_unref(pa_context_get_source_info_by_index(c, default_source_index, source_cb, NULL));
   } else { // update server info and update default sink and source
-    pa_context_get_server_info(c, servinfo_cb, NULL);
+    pa_operation_unref(pa_context_get_server_info(c, servinfo_cb, NULL));
   }
 }
 
