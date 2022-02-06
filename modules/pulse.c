@@ -1,3 +1,12 @@
+/*  pulseaudio modules
+
+    Monitor your audio level for default sink and show default mic mute
+
+    Configuration:
+      -
+
+    Warning! Only one pulse module can be on the bar
+*/
 #include "../kwstatus.h"
 #include <stdio.h>
 #include <pulse/mainloop.h>
@@ -6,8 +15,6 @@
 #include <pulse/volume.h>
 #include <pulse/subscribe.h>
 #include <math.h>
-
-#define OUTBUF 100
 
 #define SINK_MUTE_ICON "🔇"
 #define SOURCE_MUTE_ICON ""
@@ -26,7 +33,7 @@ static int volume;
 static int sink_mute;
 static int source_mute;
 
-static char out[OUTBUF+1];
+static char out[MODSIZE];
 
 static void
 update_text(void) {
@@ -42,9 +49,9 @@ update_text(void) {
     sink_icon = AUDIO_LEVEL_MIN;
 
   if(source_mute)
-    snprintf(out, OUTBUF, SOURCE_MUTE_ICON " %s %d%%", sink_icon, volume);
+    snprintf(out, MODSIZE, SOURCE_MUTE_ICON " %s %d%%", sink_icon, volume);
   else
-    snprintf(out, OUTBUF, "%s %d%%", sink_icon, volume);
+    snprintf(out, MODSIZE, "%s %d%%", sink_icon, volume);
 
   mod_update(mod, out);
 }
