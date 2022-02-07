@@ -1,3 +1,25 @@
+/*  mpd module
+
+    shows current playing song and its status
+    Configuration:
+      .str - mpd server hostname (do not set to use default)
+      .num - port (do not set to use default)
+      other macros (see below)
+*/
+/* icon to use if song is paused */
+#define PAUSED ""
+/* icon to use if song is playing */
+#define PLAYING ""
+
+/* icon to use when repeat mode is set */
+#define REPEAT "🔁 "
+/* icon to use when random mode is set */
+#define RANDOM "🔀 "
+
+/* time between attempts to reconnect when lost connection */
+#define CONNECTION_RETRY_TIME 5
+/* end of configuration */
+
 #include "../kwstatus.h"
 #include <stdio.h>
 #include <mpd/client.h>
@@ -6,15 +28,7 @@
 #include <unistd.h>
 #include <poll.h>
 
-#define PAUSED ""
-#define PLAYING ""
-
-#define REPEAT "🔁 "
-#define RANDOM "🔀 "
-
-#define CONNECTION_RETRY_TIME 5
-
-char*
+static char*
 pretty_name(const char* file) {
   char* out;
   size_t n, end, len;
@@ -33,7 +47,7 @@ pretty_name(const char* file) {
   return out;
 }
 
-char*
+static char*
 get_song_name(struct mpd_song* song) {
   char* tag_title;
   char* tag_artist;
