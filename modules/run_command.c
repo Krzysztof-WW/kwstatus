@@ -1,3 +1,11 @@
+/*  run_command
+
+    Run shell commands and redirect its output to bar
+
+    Configuration:
+      .str - command
+      .num - refresh time
+*/
 #include "../kwstatus.h"
 #include <stdio.h>
 #include <unistd.h>

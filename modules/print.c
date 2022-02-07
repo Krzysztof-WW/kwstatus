@@ -1,3 +1,11 @@
+/*  print module
+
+    Prints static text on status bat
+
+    Configuration:
+      .str - text
+
+*/
 #include "../kwstatus.h"
 
 void
