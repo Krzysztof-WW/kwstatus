@@ -51,8 +51,10 @@ clockm(void* self) {
   clock_pos = strstr(mod->str, CLOCK_SEQ);
   if(clock_pos) {
     strncpy(fmt, mod->str, clock_pos - mod->str);
-    strcpy(fmt + (clock_pos-mod->str) + icon_len, clock_pos + LENGTH(CLOCK_SEQ));
+    strcpy(fmt + (clock_pos-mod->str) + icon_len, clock_pos + LENGTH(CLOCK_SEQ)-1);
     clock_pos = fmt + (clock_pos-mod->str);
+  } else {
+    strcpy(fmt, mod->str);
   }
 
   while(1) {
@@ -62,7 +64,7 @@ clockm(void* self) {
 
     /* insert clock icon */
     if(clock_pos)
-      strncpy(clock_pos, cf[tm.tm_hour > 12 ? tm.tm_hour - 12 : tm.tm_hour], 4);
+      strncpy(clock_pos, cf[tm.tm_hour > 12 ? tm.tm_hour - 12 : tm.tm_hour], strlen(cf[0]));
 
     /* format and update */
     strftime(out, MODSIZE, fmt, &tm);
