@@ -1,12 +1,22 @@
 /*  pulseaudio modules
 
+    Warning! Only one pulse module can be on the bar
     Monitor your audio level for default sink and show default mic mute
 
     Configuration:
-      -
-
-    Warning! Only one pulse module can be on the bar
+      Macros (see below)
+    
 */
+/* icons for status */
+#define SINK_MUTE_ICON "🔇"
+#define SOURCE_MUTE_ICON ""
+
+/* icons for audio level */
+#define AUDIO_LEVEL_MIN "🔈"
+#define AUDIO_LEVEL_MID "🔉"
+#define AUDIO_LEVEL_MAX "🔊"
+/* end of configuration */
+
 #include "../kwstatus.h"
 #include <stdio.h>
 #include <pulse/mainloop.h>
@@ -15,13 +25,6 @@
 #include <pulse/volume.h>
 #include <pulse/subscribe.h>
 #include <math.h>
-
-#define SINK_MUTE_ICON "🔇"
-#define SOURCE_MUTE_ICON ""
-
-#define AUDIO_LEVEL_MIN "🔈"
-#define AUDIO_LEVEL_MID "🔉"
-#define AUDIO_LEVEL_MAX "🔊"
 
 struct modules* mod;
 static enum pa_context_state state;
