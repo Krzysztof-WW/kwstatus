@@ -12,7 +12,7 @@ struct modules mdl[] = {
 
   {print, .str = ";;", .no_delim = 1},
   {mpd},
-  {clockm, .num = 1, .no_delim = 1},
+  {clockm, .str = "%i %02H:%02M:%02S", .num = 1, .no_delim = 1},
 };
 
 /* bar will not update more frequently than align_ms, align_ms also adds delay to bar */
