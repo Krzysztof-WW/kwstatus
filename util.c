@@ -9,7 +9,7 @@ emalloc(size_t size) {
   void* ret;
   ret = malloc(size);
   if(ret == NULL) {
-    fputs("malloc: out of memory\n", stderr);
+    perror("kwstatus module malloc");
     pthread_exit(NULL);
   }
   return ret;
@@ -20,7 +20,7 @@ ecalloc(size_t nmemb, size_t size) {
   void* ret;
   ret = calloc(nmemb, size);
   if(ret == NULL) {
-    fputs("calloc: out of memory\n", stderr);
+    perror("kwstatus module calloc");
     pthread_exit(NULL);
   }
   return ret;

@@ -6,7 +6,6 @@
 #define LENGTH(x) (sizeof(x)/sizeof(x[0]))
 
 #define MODSIZE 100 /* module max length */
-#define BARSIZE MODSIZE*LENGTH(mdl) /* max bar length */
 
 struct modules {
   void (*fun)(void*);
@@ -14,7 +13,7 @@ struct modules {
   const char* str;
   const short no_delim;
 
-  char out[MODSIZE];
+  char* out;
   pthread_mutex_t mut;
 };
 
