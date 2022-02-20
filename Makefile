@@ -5,8 +5,7 @@ LIBS = ${MODULES_LIBS} -pthread -lxcb
 CC = gcc
 
 MODULES_LIBS = -lpulse -lm -lmpdclient
-MODULES = modules/test\
-					modules/print\
+MODULES = modules/print\
 					modules/clockm\
 					modules/backlight\
 					modules/battery\
