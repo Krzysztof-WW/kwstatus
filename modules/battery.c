@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 /*  battery module
 
     Monitor battery and do actions on events

@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdlib.h>

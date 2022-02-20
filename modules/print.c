@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 /*  print module
 
     Prints static text on status bat

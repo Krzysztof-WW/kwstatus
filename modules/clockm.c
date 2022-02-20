@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 /*  clock module
 
     Display time and date with clock icon formatted with syntax from strftime(3).

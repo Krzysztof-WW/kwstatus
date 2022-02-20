@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 /*  brightness module
     
     This module shows current brightness of display in laptop.

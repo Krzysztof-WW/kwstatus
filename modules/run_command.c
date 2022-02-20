@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 /*  run_command
 
     Run shell commands and redirect its output to bar

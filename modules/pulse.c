@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 /*  pulseaudio modules
 
     Warning! Only one pulse module can be on the bar

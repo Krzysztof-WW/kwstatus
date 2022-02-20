@@ -1,3 +1,6 @@
+/* Copyright (C) 2022 Krzysztof Wolski
+ * See COPYING for license details */
+
 #ifndef KWSTATUS_H
 #define KWSTATUS_H
 
