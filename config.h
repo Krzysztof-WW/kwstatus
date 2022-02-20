@@ -1,6 +1,9 @@
 #include "modules.h"
 
+/* refer to each module documentation in its source file to see what parameters it accepts. */
 struct modules mdl[] = {
+  /* function, .str | .num | .no_delim */
+  /* when .no_delim is set to 1 then no delimeter is added between this and next module */
   {battery, .str = "BAT0", .num = 3},
 
   {pulse},
