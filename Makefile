@@ -15,6 +15,9 @@ MODULES = modules/print\
 
 all: kwstatus
 
+config.h:
+	cp config.def.h $@
+
 kwstatus.o: modules.h config.h kwstatus.h
 
 kwstatus: kwstatus.o util.o ${MODULES:=.o}
