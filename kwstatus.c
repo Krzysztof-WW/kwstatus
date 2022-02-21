@@ -75,7 +75,7 @@ main(int argc, char* argv[]) {
     if(!strcmp(argv[1], "-d"))
       dry = 1;
     else {
-      fputs("usage: kstatus [-d]\n", stderr);
+      fputs("usage: kwstatus [-d]\n", stderr);
       exit(1);
     }
   }
