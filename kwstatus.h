@@ -16,8 +16,9 @@ struct modules {
   /* options of module */
   const char* str;
   const long num;
-
   const short no_delim;
+  const char* icon;
+
   char* out;
   pthread_mutex_t mut;
 };

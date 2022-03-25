@@ -26,10 +26,19 @@ void
 mod_update(struct modules* self, const char* out) {
   /* copy text to module */
   pthread_mutex_lock(&self->mut);
-  strncpy(self->out, out, MODSIZE-1);
-  self->out[MODSIZE-1] = 0;
-  if(!self->no_delim && self->out[0]) /* add delimiter at the end */
-    strncat(self->out, delim, max_mod_len-2);
+
+  if(out[0]) {
+    if(self->icon)
+      strncpy(self->out, self->icon, MODSIZE-1);
+    else
+      self->out[0] = 0;
+    strncat(self->out, out, MODSIZE-1);
+    self->out[MODSIZE-1] = 0;
+    if(!self->no_delim) /* add delimiter at the end */
+      strncat(self->out, delim, max_mod_len-2);
+  } else
+    self->out[0] = 0;
+
   pthread_mutex_unlock(&self->mut);
 
   /* send signal to update status bar */
