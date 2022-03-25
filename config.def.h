@@ -10,8 +10,8 @@ struct modules mdl[] = {
   {pulse},
   {backlight, .str = "intel_backlight"},
   {disk, .str = "/", .num = 80, .icon = "💾 "},
-  {run_command, .str = "date '+%a %m.%d'", .num = 240, .no_delim = 1, .icon = "📅 "},
-  {clockm, .str = "%i %02H:%02M:%02S", .num = 1, .no_delim = 1},
+  {run_command, .str = "date '+%a %m.%d'", .num = 240, .icon = "📅 "},
+  {clockm, .str = "%i %02H:%02M:%02S", .num = 1},
 };
 
 /* bar will not update more frequently than align_ms, align_ms also adds delay to bar */
