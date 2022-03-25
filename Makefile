@@ -11,7 +11,8 @@ MODULES = modules/print\
 					modules/battery\
 					modules/pulse\
 					modules/mpd\
-					modules/run_command
+					modules/run_command\
+					modules/disk
 
 all: kwstatus
 

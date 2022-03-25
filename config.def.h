@@ -6,15 +6,11 @@ struct modules mdl[] = {
   /* when .no_delim is set to 1 then no delimeter is added between this and next module */
   /* icon adds icon before text from module */
   {mpd},
-
   {battery, .str = "BAT0", .num = 3},
-
   {pulse},
-
   {backlight, .str = "intel_backlight"},
-
+  {disk, .str = "/", .num = 80, .icon = "💾 "},
   {run_command, .str = "date '+%a %m.%d'", .num = 240, .no_delim = 1, .icon = "📅 "},
-
   {clockm, .str = "%i %02H:%02M:%02S", .num = 1, .no_delim = 1},
 };
 
