@@ -10,3 +10,4 @@ MOD(mpd);
 MOD(run_command);
 MOD(disk);
 MOD(interface);
+MOD(ram);
