@@ -1,7 +1,7 @@
 /* Copyright (C) 2022 Krzysztof Wolski
  * See COPYING for license details */
 
-/*  clock module
+/*  cock module
 
     Display time and date with clock icon formatted with syntax from strftime(3).
     To get clock icon displayed you can use "%i" sequence or customize it with CLOCK_SEQ.
