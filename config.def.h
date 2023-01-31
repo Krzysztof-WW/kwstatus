@@ -5,7 +5,7 @@ struct modules mdl[] = {
   /* function, .str | .num | .no_delim | .icon */
   /* when .no_delim is set to 1 then no delimeter is added between this and next module */
   /* icon adds icon before text from module */
-  {mpd},
+  //{mpd}, // to use, enable MPD in config.mk
   {battery, .str = "BAT0", .num = 3},
   {pulse},
   {backlight, .str = "intel_backlight"},
