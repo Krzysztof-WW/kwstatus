@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define BRIGHTNES_ROOT "/sys/class/backlight/"
 #define BRIGHTNESS "/brightness"
@@ -82,7 +83,7 @@ backlight(void* self) {
 
     /* generate text */
     backlight = atoi(bcstr);
-    backlight = backlight*100/max_brightness;
+    backlight = round(backlight*100./max_brightness);
     if(backlight > 80)
       icon = 0;
     else if(backlight > 60)
