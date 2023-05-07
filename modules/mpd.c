@@ -154,10 +154,17 @@ mpd(void* self) {
       }
 
       /* update text */
-      snprintf(out, MODSIZE-1, "%d:%02d/%d:%02d %s%s%s %s",
-          elapsed_min, elapsed_s, total_min, total_s,
-          repeat_icon, random_icon, state_icon,
-          song_name);
+      if(total_min == 0 && total_s == 0) {
+        snprintf(out, MODSIZE-1, "%d:%02d %s%s%s %s",
+            elapsed_min, elapsed_s,
+            repeat_icon, random_icon, state_icon,
+            song_name);
+      } else {
+        snprintf(out, MODSIZE-1, "%d:%02d/%d:%02d %s%s%s %s",
+            elapsed_min, elapsed_s, total_min, total_s,
+            repeat_icon, random_icon, state_icon,
+            song_name);
+      }
       mod_update(mod, out);
 
     } else {
