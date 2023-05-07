@@ -42,8 +42,8 @@ kwstatus: kwstatus.o util.o ${MODULES:=.o}
 	${CC} ${CFLAGS} ${CPPFLAGS} -c $< -o $@
 
 install: kwstatus
-	mkdir -p ${PREFIX}/bin
-	cp -f kwstatus ${PREFIX}/bin/kwstatus
+	mkdir -p ${DESTDIR}${PREFIX}/bin
+	cp -f kwstatus ${DESTDIR}${PREFIX}/bin/kwstatus
 
 clean:
 	rm -f *.o modules/*.o kwstatus
