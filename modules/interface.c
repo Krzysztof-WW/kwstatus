@@ -28,7 +28,7 @@ interface(void* self) {
   struct sockaddr_nl sa = {0};
   struct ifreq ifr;
   struct in_addr addr;
-  int watch, ip;
+  int watch, ip, err;
   
   // hacky way to control icon
   const char* icon;
@@ -56,11 +56,12 @@ interface(void* self) {
   
 
   while(1) {
-    ioctl(ip, SIOCGIFADDR, &ifr);
+    err = ioctl(ip, SIOCGIFADDR, &ifr);
     addr = ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr;
 
     // check for link-local and 0.0.0.0
-    if((addr.s_addr & 0x0000ffff) != 0x0000fea9 && addr.s_addr != 0) {
+    if(err == 0 && (addr.s_addr & 0x0000ffff) != 0x0000fea9 && addr.s_addr != 0) {
+      printf("%x\n", addr.s_addr);
       mod_update(mod, icon);
     } else {
       mod_update(mod, "");
